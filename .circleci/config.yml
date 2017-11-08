@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: hashicorp/terraform
+    steps:
+      - checkout
+      - run:
+          name: Set up Terraform
+          command: terraform init -backend=false
+      - run:
+          name: Validate Terraform
+          command: terraform validate -check-variables=false
