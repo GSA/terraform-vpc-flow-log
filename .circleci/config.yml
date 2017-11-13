@@ -7,7 +7,7 @@ jobs:
       - checkout
       - run:
           name: Set up Terraform
-          command: terraform init -backend=false
+          command: terraform init -backend=false test
       - run:
           name: Validate Terraform
-          command: terraform validate -check-variables=false
+          command: terraform validate -check-variables=false test
