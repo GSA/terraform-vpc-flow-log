@@ -1,3 +1,4 @@
+// https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/flow-logs.html#flow-logs-iam
 data "template_file" "assume_role_policy" {
   template = "${file("${path.module}/assume_role_policy.json")}"
 }

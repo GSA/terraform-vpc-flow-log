@@ -1,3 +1,3 @@
 variable "prefix" {
-  default = "vpc"
+  default = "test-flow-log"
 }

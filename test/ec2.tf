@@ -1,9 +1,58 @@
-resource "aws_network_interface" "test" {
-  subnet_id       = "${module.network.public_subnets[0]}"
-  security_groups = ["${module.network.default_security_group_id}"]
+resource "aws_key_pair" "deployer" {
+  key_name_prefix = "${var.prefix}-deployer-key"
+  public_key = "${file("~/.ssh/id_rsa.pub")}"
 }
 
-resource "aws_eip" "main" {
-  vpc                       = true
-  network_interface         = "${aws_network_interface.test.id}"
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_security_group" "main" {
+  vpc_id = "${module.network.vpc_id}"
+
+  # SSH access from anywhere
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # outbound internet access
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "main" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+
+  subnet_id = "${module.network.public_subnets[0]}"
+  vpc_security_group_ids = ["${aws_security_group.main.id}"]
+
+  key_name = "${aws_key_pair.deployer.key_name}"
+
+  provisioner "remote-exec" {
+    inline = ["echo Successfully connected"]
+
+    connection {
+      user = "ubuntu"
+    }
+  }
 }
