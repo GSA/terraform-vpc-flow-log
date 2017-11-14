@@ -1,6 +1,7 @@
 import boto3
 import subprocess
 import unittest
+import urllib
 
 class TestStringMethods(unittest.TestCase):
 
@@ -15,13 +16,21 @@ class TestStringMethods(unittest.TestCase):
         client = boto3.client('logs')
 
         log_group = self.get_log_group()
+        ip = self.get_my_ip()
 
         # hitting https://github.com/boto/boto3/issues/454
         response = client.filter_log_events(
             logGroupName=log_group,
+            filterPattern=ip,
             limit=1
         )
         return response['events']
+
+    def get_my_ip(self):
+        url = 'http://checkip.amazonaws.com/'
+        with urllib.request.urlopen(url) as response:
+            content = response.read()
+            return content.decode('utf-8').strip()
 
     def test_logs_present(self):
         events = self.get_flow_logs()
