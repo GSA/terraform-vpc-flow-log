@@ -6,17 +6,19 @@ import unittest
 import urllib
 import warnings
 
+
 class TestStringMethods(unittest.TestCase):
 
     def can_connect_to_port(self, host, port):
         # https://stackoverflow.com/a/20541919
-        s =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = s.connect_ex((host, port))
         s.close()
         return result == 0
 
     def get_terraform_output(self, name):
-        result = subprocess.run(['terraform', 'output', name], stdout=subprocess.PIPE)
+        cmd = ['terraform', 'output', name]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE)
         return result.stdout.decode('utf-8').strip()
 
     def get_log_group(self):
@@ -26,8 +28,14 @@ class TestStringMethods(unittest.TestCase):
         return not result
 
     # VPC flow logs can take a while to show up (over 22 minutes on 11/14/17), so retry until we get something
-    @retry(retry_on_result=is_result_empty, wait_fixed=(5 * 1000), stop_max_delay=(25 * 60 * 1000))
+    @retry(
+        retry_on_result=is_result_empty,
+        wait_fixed=(5 * 1000),
+        stop_max_delay=(25 * 60 * 1000)
+    )
     def get_flow_logs(self):
+        """Get flow logs pertaining to the test machine's IP address."""
+
         # indicate each try
         print('.', end='', flush=True)
 
@@ -50,11 +58,12 @@ class TestStringMethods(unittest.TestCase):
             content = response.read()
             return content.decode('utf-8').strip()
 
+    # Terraform will connect to the instance through its `provisioner`, but trigger here just in case that wasn't run from the same IP or something
     def test_connect_to_test_instance(self):
         instance_ip = self.get_terraform_output('ip')
         self.assertTrue(self.can_connect_to_port(instance_ip, 22))
 
-    def test_logs_present(self):
+    def test_events_present(self):
         print("\nFetching events", end='', flush=True)
 
         # workaround for https://github.com/boto/boto3/issues/454
@@ -63,6 +72,7 @@ class TestStringMethods(unittest.TestCase):
 
             events = self.get_flow_logs()
 
+        print('')
         self.assertGreater(len(events), 0)
 
 if __name__ == '__main__':
