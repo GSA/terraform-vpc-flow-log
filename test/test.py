@@ -2,6 +2,7 @@ import boto3
 import subprocess
 import unittest
 import urllib
+import warnings
 
 class TestStringMethods(unittest.TestCase):
 
@@ -18,7 +19,6 @@ class TestStringMethods(unittest.TestCase):
         log_group = self.get_log_group()
         ip = self.get_my_ip()
 
-        # hitting https://github.com/boto/boto3/issues/454
         response = client.filter_log_events(
             logGroupName=log_group,
             filterPattern=ip,
@@ -33,7 +33,12 @@ class TestStringMethods(unittest.TestCase):
             return content.decode('utf-8').strip()
 
     def test_logs_present(self):
-        events = self.get_flow_logs()
+        # workaround for https://github.com/boto/boto3/issues/454
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore', ResourceWarning)
+
+            events = self.get_flow_logs()
+
         self.assertGreater(len(events), 0)
 
 if __name__ == '__main__':
