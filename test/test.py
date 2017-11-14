@@ -1,10 +1,18 @@
 import boto3
+import socket
 import subprocess
 import unittest
 import urllib
 import warnings
 
 class TestStringMethods(unittest.TestCase):
+
+    def can_connect_to_port(self, host, port):
+        # https://stackoverflow.com/a/20541919
+        s =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = s.connect_ex((host, port))
+        s.close()
+        return result == 0
 
     def get_terraform_output(self, name):
         result = subprocess.run(['terraform', 'output', name], stdout=subprocess.PIPE)
@@ -31,6 +39,10 @@ class TestStringMethods(unittest.TestCase):
         with urllib.request.urlopen(url) as response:
             content = response.read()
             return content.decode('utf-8').strip()
+
+    def test_connect_to_test_instance(self):
+        instance_ip = self.get_terraform_output('ip')
+        self.assertTrue(self.can_connect_to_port(instance_ip, 22))
 
     def test_logs_present(self):
         # workaround for https://github.com/boto/boto3/issues/454
