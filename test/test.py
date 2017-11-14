@@ -1,4 +1,5 @@
 import boto3
+from retrying import retry
 import socket
 import subprocess
 import unittest
@@ -21,7 +22,15 @@ class TestStringMethods(unittest.TestCase):
     def get_log_group(self):
         return self.get_terraform_output('log_group_name')
 
+    def is_result_empty(result):
+        return not result
+
+    # VPC flow logs can take a while to show up (over 22 minutes on 11/14/17), so retry until we get something
+    @retry(retry_on_result=is_result_empty, wait_fixed=(5 * 1000), stop_max_delay=(25 * 60 * 1000))
     def get_flow_logs(self):
+        # indicate each try
+        print('.', end='', flush=True)
+
         client = boto3.client('logs')
 
         log_group = self.get_log_group()
@@ -29,6 +38,7 @@ class TestStringMethods(unittest.TestCase):
 
         response = client.filter_log_events(
             logGroupName=log_group,
+            # only show events pertaining to the test machine
             filterPattern=ip,
             limit=1
         )
@@ -45,6 +55,8 @@ class TestStringMethods(unittest.TestCase):
         self.assertTrue(self.can_connect_to_port(instance_ip, 22))
 
     def test_logs_present(self):
+        print("\nFetching events", end='', flush=True)
+
         # workaround for https://github.com/boto/boto3/issues/454
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', ResourceWarning)
