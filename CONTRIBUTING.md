@@ -24,7 +24,11 @@ Requires Python 3, pip, and Terraform. Note you may need to [configure AWS envir
 
 ```sh
 cd terraform
-pip install -r requirements.txt
+
+pip install pipenv
+pipenv install
+pipenv shell
+
 terraform apply
 python test.py
 ```
