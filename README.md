@@ -10,3 +10,5 @@ module "flow_logs" {
   vpc_id = "${aws_vpc.main.id}"
 }
 ```
+
+See the [optional variables](variables.tf).
