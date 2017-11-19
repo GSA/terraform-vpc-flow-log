@@ -13,7 +13,7 @@ module "network" {
 }
 
 module "flow_logs" {
-  source = ".."
+  source = "../"
   vpc_id = "${module.network.vpc_id}"
   prefix = "${var.prefix}"
 }
