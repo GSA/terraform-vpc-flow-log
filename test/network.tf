@@ -4,6 +4,7 @@ data "aws_region" "current" {
 
 module "network" {
   source = "terraform-aws-modules/vpc/aws"
+  version = "~> 1.0"
 
   name = "terraform-vpc-flow-log-test"
   azs = ["${data.aws_region.current.name}d"]
