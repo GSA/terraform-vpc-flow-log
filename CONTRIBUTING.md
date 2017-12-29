@@ -23,7 +23,7 @@ with this waiver of copyright interest.
 Requires Python 3, pip, and Terraform. Note you may need to [configure AWS environment variables](https://www.terraform.io/docs/providers/aws/#environment-variables) first.
 
 ```sh
-cd terraform
+cd test
 
 pip install pipenv
 pipenv install
