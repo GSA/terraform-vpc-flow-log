@@ -7,7 +7,7 @@ import urllib
 import warnings
 
 
-class TestStringMethods(unittest.TestCase):
+class TestVpcFlowLog(unittest.TestCase):
 
     def can_connect_to_port(self, host, port):
         # https://stackoverflow.com/a/20541919
@@ -18,7 +18,7 @@ class TestStringMethods(unittest.TestCase):
 
     def get_terraform_output(self, name):
         cmd = ['terraform', 'output', name]
-        result = subprocess.run(cmd, stdout=subprocess.PIPE)
+        result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE)
         return result.stdout.decode('utf-8').strip()
 
     def get_log_group(self):
