@@ -9,19 +9,20 @@ data "template_file" "log_policy" {
 }
 
 resource "aws_iam_role" "iam_log_role" {
-  name = "${var.prefix}-flow-log-role"
+  name               = "${var.prefix}-flow-log-role"
   assume_role_policy = "${data.template_file.assume_role_policy.rendered}"
 }
 
 resource "aws_iam_role_policy" "log_policy" {
-  name = "${var.prefix}-flow-log-policy"
-  role = "${aws_iam_role.iam_log_role.id}"
+  name   = "${var.prefix}-flow-log-policy"
+  role   = "${aws_iam_role.iam_log_role.id}"
   policy = "${data.template_file.log_policy.rendered}"
 }
 
-
 resource "aws_cloudwatch_log_group" "flow_log_group" {
   name = "${var.log_group_name == "" ? local.default_log_group_name : var.log_group_name}"
+
+  tags = "${var.tags}"
 }
 
 resource "aws_flow_log" "vpc_flow_log" {
