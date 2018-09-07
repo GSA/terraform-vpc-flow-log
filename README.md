@@ -11,4 +11,5 @@ module "flow_logs" {
 }
 ```
 
-See the [optional variables](variables.tf).
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
