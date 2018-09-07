@@ -22,6 +22,6 @@ variable "log_group_name" {
 }
 
 variable "tags" {
-  default     = []
+  default     = {}
   description = "A map containing tags to apply to the cloudwatch_log_group"
 }
