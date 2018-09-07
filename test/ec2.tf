@@ -1,6 +1,6 @@
 resource "aws_key_pair" "deployer" {
   key_name_prefix = "${var.prefix}-deployer-key"
-  public_key = "${file("~/.ssh/id_rsa.pub")}"
+  public_key      = "${file("~/.ssh/id_rsa.pub")}"
 }
 
 data "aws_ami" "ubuntu" {
@@ -35,7 +35,7 @@ resource "aws_instance" "main" {
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "t2.micro"
 
-  subnet_id = "${module.network.public_subnets[0]}"
+  subnet_id              = "${module.network.public_subnets[0]}"
   vpc_security_group_ids = ["${aws_security_group.main.id}"]
 
   key_name = "${aws_key_pair.deployer.key_name}"
