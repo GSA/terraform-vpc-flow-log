@@ -12,4 +12,20 @@ module "flow_logs" {
 ```
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| log_group_name | Defaults to `$${default_log_group_name}` | string | `` | no |
+| prefix | The prefix for the resource names. You will probably want to set this to the name of your VPC, if you have multiple. | string | `vpc` | no |
+| traffic_type | https://www.terraform.io/docs/providers/aws/r/flow_log.html#traffic_type | string | `ALL` | no |
+| vpc_id |  | string | - | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| log_group_name | The name of the created cloudwatch log group |
+
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
